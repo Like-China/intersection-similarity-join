@@ -1,0 +1,40 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Check",
+            "request": "launch",
+            "mainClass": "evaluation.Check",
+            "projectName": "tkde-contact_585843dd"
+        },
+        {
+            "type": "java",
+            "name": "Loader",
+            "request": "launch",
+            "mainClass": "evaluation.Loader",
+            "projectName": "tkde-contact_f28a581d"
+        },
+        {
+            "type": "java",
+            "name": "PortoProcess",
+            "request": "launch",
+            "mainClass": "evaluation.PortoProcess",
+            "projectName": "tkde-contact_f28a581d"
+        },
+        {
+            "type": "java",
+            "name": "Launch Check",
+            "request": "launch",
+            "mainClass": "evaluation.Check",
+            "projectName": "tkde-contact_f28a581d",
+            "vmArgs": "-enableassertions -Xmx102400m -Xms3550m"
+        },
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        }
+    ]
+}
