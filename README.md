@@ -21,3 +21,7 @@ The evaluation of BF-Alg, MJ-Alg and BJ-Alg are implemented by BruteEvaluation.j
 The refinement is implemented in Refine.java
 Test.java is the main entrance of this project for overall evaluation with varied parameters.
 
+# Open Data
+The Geolife dataset is available at \url{https://www.kaggle.com/datasets/arashnic/microsoft-geolife-gps-trajectory-dataset}.
+The Porto dataset is available at \url{https://www.kaggle.com/c/pkdd-15-predict-taxi-service-trajectory-i/data}.
+
