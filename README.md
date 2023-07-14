@@ -1,4 +1,4 @@
-# Contact Pre-warning: Contact Matching
+# Intersection Similarity Join Over Moving Objects (IS-Join)
 This implementation follows the content of the article "Intersection Similarity Join Over Moving Objects", which implements the part of BF-Alg, MJ-Alg and BJ-Alg, and evaluates their performances for different settings.
 
 # Environment
@@ -22,6 +22,6 @@ The refinement is implemented in Refine.java
 Test.java is the main entrance of this project for overall evaluation with varied parameters.
 
 # Open Data
-The Geolife dataset is available at \url{https://www.kaggle.com/datasets/arashnic/microsoft-geolife-gps-trajectory-dataset}.
-The Porto dataset is available at \url{https://www.kaggle.com/c/pkdd-15-predict-taxi-service-trajectory-i/data}.
+The Geolife dataset is available at https://www.kaggle.com/datasets/arashnic/microsoft-geolife-gps-trajectory-dataset.
+The Porto dataset is available at https://www.kaggle.com/c/pkdd-15-predict-taxi-service-trajectory-i/data.
 
