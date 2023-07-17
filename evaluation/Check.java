@@ -51,7 +51,7 @@ public class Check {
                                 System.gc();
                         }
 
-                        TernaryBallTreeEvaluation ternaryBall = new TernaryBallTreeEvaluation(l.queries, l.db,
+                        HBallTreeEvaluation ternaryBall = new HBallTreeEvaluation(l.queries, l.db,
                                         repartitionRatio, minLeafNB);
                         ballCandidate = ternaryBall.getCandidate();
                         searchCountSumOfTernary += ternaryBall.searchCount;

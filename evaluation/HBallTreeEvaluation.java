@@ -6,7 +6,7 @@ import balltree.TernaryBallTree;
 import utils.ContactPair;
 import utils.Data;
 
-public class TernaryBallTreeEvaluation {
+public class HBallTreeEvaluation {
     public ArrayList<Data> queries = new ArrayList<>();
     public ArrayList<Data> db = new ArrayList<>();
     public long cTime = 0;
@@ -15,7 +15,7 @@ public class TernaryBallTreeEvaluation {
     public double repartirionRatio = 0;
     public int minLeafNB = 0;
 
-    public TernaryBallTreeEvaluation(ArrayList<Data> queries, ArrayList<Data> db, double repartirionRatio, int minLeafNB) {
+    public HBallTreeEvaluation(ArrayList<Data> queries, ArrayList<Data> db, double repartirionRatio, int minLeafNB) {
         this.queries = queries;
         this.db = db;
         this.repartirionRatio = repartirionRatio;
