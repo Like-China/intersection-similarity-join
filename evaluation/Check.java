@@ -18,7 +18,7 @@ public class Check {
                                 ternaryFTimePara = 0;
                 long basicRTime = 0, advanceRTime = 0, advanceRTimePara = 0, basicRTimePara = 0;
 
-                int expNum = 5;
+                int expNum = 20;
                 int searchCountSumOfBall = 0;
                 int searchCountSumOfTernary = 0;
                 l.getAllData(1000, Settings.maxSpeed);
@@ -140,7 +140,7 @@ public class Check {
                 long bruteFTime = 0, ballFTime = 0, mFTime = 0, ternaryFTime = 0;
                 long basicRTime = 0, advanceRTime = 0;
 
-                int expNum = 2;
+                int expNum = 20;
                 int searchCountSumOfBall = 0;
                 int searchCountSumOfTernary = 0;
                 l.getAllData(Settings.objectNB, maxSpeed);
@@ -242,66 +242,6 @@ public class Check {
                 return res;
         }
 
-        public static double[] presision(double maxSpeed, int cardinality, int minLeafNB, double interRatio,
-                        int sampleNum) {
-
-                Loader l = new Loader();
-                double precision = 0, recall = 0;
-                int expNum = 2;
-                l.getAllData(Settings.objectNB, maxSpeed);
-                for (int i = 0; i < expNum; i++) {
-                        long loopStart = System.currentTimeMillis();
-                        System.out.print("Round: " + (i + 1));
-                        l.getBatch(cardinality);
-
-                        ArrayList<ContactPair> ballCandidate = new ArrayList<>();
-                        ParallelBallTreeEvaluation ball = new ParallelBallTreeEvaluation(l.queries, l.db, minLeafNB);
-                        ballCandidate = ball.getCandidate();
-                        ArrayList<ContactPair> my = Refine.monitor(ballCandidate, interRatio, true, sampleNum);
-                        ArrayList<ContactPair> groundtruth = Refine.monitor(ballCandidate, interRatio, true, 100);
-
-                        double TP = 0, FP = 0, FN = 0;
-                        for (ContactPair p1 : my) {
-                                boolean flag = false;
-                                for (ContactPair p2 : groundtruth) {
-                                        if (p1.query == p2.query && p1.db == p2.db) {
-                                                flag = true;
-                                                break;
-                                        }
-                                }
-                                if (flag) {
-                                        TP += 1;
-                                } else {
-                                        FP += 1;
-                                }
-                        }
-                        precision = TP / (TP + FP);
-
-                        TP = 0;
-                        FP = 0;
-                        FN = 0;
-                        for (ContactPair p1 : groundtruth) {
-                                boolean flag = false;
-                                for (ContactPair p2 : my) {
-                                        if (p1.query == p2.query && p1.db == p2.db) {
-                                                flag = true;
-                                                break;
-                                        }
-                                }
-                                if (flag) {
-                                        TP += 1;
-                                } else {
-                                        FN += 1;
-                                }
-                        }
-                        recall = TP / (TP + FN);
-
-                        long loopEnd = System.currentTimeMillis();
-                        System.out.println("\t Round Time Cost: " + (loopEnd - loopStart));
-                }
-                return new double[] { precision, recall };
-        }
-
         public static void varyTest() {
                 long t1 = System.currentTimeMillis();
                 ArrayList<Long[][]> allRes = new ArrayList<>();
@@ -336,25 +276,27 @@ public class Check {
                 // vary interRatio
                 // Utils.writeFile("", "Varying interRatio");
                 // for (double interRatio : Settings.interRatios) {
-                //         System.out.println("Vary interRatio");
-                //         res = evaluate(Settings.maxSpeed, Settings.cardinality, Settings.minLeafNB, interRatio,
-                //                         Settings.repartitionRatio, Settings.sampleNum, false, false, false);
-                //         allRes.add(res);
+                // System.out.println("Vary interRatio");
+                // res = evaluate(Settings.maxSpeed, Settings.cardinality, Settings.minLeafNB,
+                // interRatio,
+                // Settings.repartitionRatio, Settings.sampleNum, false, false, false);
+                // allRes.add(res);
                 // }
                 // for (Long[][] item : allRes) {
-                //         Utils.writeFile("interRatio", Arrays.deepToString(item));
+                // Utils.writeFile("interRatio", Arrays.deepToString(item));
                 // }
                 // allRes = new ArrayList<>();
                 // // vary repartition ratio
                 // Utils.writeFile("", "Varying repartition ratio");
                 // for (double repartitionRatio : Settings.repartitionRatios) {
-                //         System.out.println("Vary repartition ratio");
-                //         res = evaluate(Settings.maxSpeed, Settings.cardinality, Settings.minLeafNB,
-                //                         Settings.interRatio, repartitionRatio, Settings.sampleNum, false, false, false);
-                //         allRes.add(res);
+                // System.out.println("Vary repartition ratio");
+                // res = evaluate(Settings.maxSpeed, Settings.cardinality, Settings.minLeafNB,
+                // Settings.interRatio, repartitionRatio, Settings.sampleNum, false, false,
+                // false);
+                // allRes.add(res);
                 // }
                 // for (Long[][] item : allRes) {
-                //         Utils.writeFile("repartition ratio", Arrays.deepToString(item));
+                // Utils.writeFile("repartition ratio", Arrays.deepToString(item));
                 // }
                 // allRes = new ArrayList<>();
                 // // vary minLeaf
