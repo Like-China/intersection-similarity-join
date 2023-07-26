@@ -24,7 +24,6 @@ public class BallTreeEvaluation {
         long t1 = System.currentTimeMillis();
         BallTree bt = new BallTree(minLeafNB, db);
         BallNode root = bt.buildBallTree();
-        // root.levelOrder(root);
         long t2 = System.currentTimeMillis();
         cTime = t2 - t1;
         ArrayList<ContactPair> candidates = new ArrayList<>();
@@ -36,7 +35,6 @@ public class BallTreeEvaluation {
         searchCount = bt.searchCount;
         t2 = System.currentTimeMillis();
         fTime = t2 - t1;
-
         // System.out.printf("Construction time: %7d Filter time:%7d**BallTree**\n",
         // cTime, fTime);
         return candidates;

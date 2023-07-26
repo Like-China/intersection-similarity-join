@@ -8,7 +8,8 @@ import utils.Utils;
 
 public class Check {
         public static Long[][] evaluate(double maxSpeed, int cardinality, int minLeafNB, double interRatio,
-                        double repartitionRatio, int sampleNum, boolean useBF, boolean useMJ, boolean useBall) {
+                        double repartitionRatio, int sampleNum, boolean useBF, boolean useMJ, boolean useBall,
+                        int intervalNum) {
 
                 Long[][] res = new Long[6][4];
                 Loader l = new Loader();
@@ -17,7 +18,7 @@ public class Check {
                 long bruteFTime = 0, ballFTime = 0, mFTime = 0, ternaryFTime = 0;
                 long basicRTime = 0, advanceRTime = 0;
 
-                int expNum = 20;
+                int expNum = 2;
                 int searchCountSumOfBall = 0;
                 int searchCountSumOfTernary = 0;
                 l.getAllData(Settings.objectNB, maxSpeed);
@@ -60,11 +61,11 @@ public class Check {
                         ternaryBall = null;
 
                         t1 = System.currentTimeMillis();
-                        Refine.monitor(ballCandidate, interRatio, false, sampleNum);
+                        Refine.monitor(ballCandidate, interRatio, false, sampleNum, intervalNum);
                         t2 = System.currentTimeMillis();
                         basicRTime += (t2 - t1);
                         t1 = System.currentTimeMillis();
-                        Refine.monitor(ballCandidate, interRatio, true, sampleNum);
+                        Refine.monitor(ballCandidate, interRatio, true, sampleNum, intervalNum);
                         t2 = System.currentTimeMillis();
                         advanceRTime += (t2 - t1);
                         long loopEnd = System.currentTimeMillis();
@@ -124,25 +125,29 @@ public class Check {
                 ArrayList<Long[][]> allRes = new ArrayList<>();
                 Long[][] res;
                 // vary speed
-                // Utils.writeFile("", "Varying speed");
-                // for (double maxSpeed : Settings.maxSpeeds) {
-                // System.out.println("Vary speed");
-                // res = evaluate(maxSpeed, Settings.cardinality, Settings.minLeafNB,
-                // Settings.interRatio,
-                // Settings.repartitionRatio, Settings.sampleNum, false, true, true);
-                // allRes.add(res);
-                // }
+                Utils.writeFile("", "Varying speed");
+                for (double maxSpeed : Settings.maxSpeeds) {
+                        System.out.println("Vary speed");
+                        res = evaluate(maxSpeed, Settings.cardinality, Settings.minLeafNB,
+                                        Settings.interRatio,
+                                        Settings.repartitionRatio, Settings.sampleNum, false, true, true,
+                                        Settings.intervalNum);
+                        allRes.add(res);
+                }
                 // for (Long[][] item : allRes) {
                 // Utils.writeFile("speed", Arrays.deepToString(item));
                 // }
                 // allRes = new ArrayList<>();
+
                 // vary cardinality
+
                 // Utils.writeFile("", "Varying cardinality");
                 // for (int cardinality : Settings.cardinalities) {
                 // System.out.println("Vary cardinality");
                 // res = evaluate(Settings.maxSpeed, cardinality, Settings.minLeafNB,
                 // Settings.interRatio,
-                // Settings.repartitionRatio, Settings.sampleNum, false, true, true);
+                // Settings.repartitionRatio, Settings.sampleNum, false, true, true,
+                // Settings.intervalNum);
                 // allRes.add(res);
                 // }
                 // for (Long[][] item : allRes) {
@@ -151,38 +156,44 @@ public class Check {
                 // allRes = new ArrayList<>();
 
                 // vary interRatio
+
                 // Utils.writeFile("", "Varying interRatio");
                 // for (double interRatio : Settings.interRatios) {
                 // System.out.println("Vary interRatio");
                 // res = evaluate(Settings.maxSpeed, Settings.cardinality, Settings.minLeafNB,
                 // interRatio,
-                // Settings.repartitionRatio, Settings.sampleNum, false, false, false);
+                // Settings.repartitionRatio, Settings.sampleNum, false, false,
+                // false,Settings.intervalNum);
                 // allRes.add(res);
                 // }
                 // for (Long[][] item : allRes) {
                 // Utils.writeFile("interRatio", Arrays.deepToString(item));
                 // }
                 // allRes = new ArrayList<>();
+
                 // // vary repartition ratio
+
                 // Utils.writeFile("", "Varying repartition ratio");
                 // for (double repartitionRatio : Settings.repartitionRatios) {
                 // System.out.println("Vary repartition ratio");
                 // res = evaluate(Settings.maxSpeed, Settings.cardinality, Settings.minLeafNB,
                 // Settings.interRatio, repartitionRatio, Settings.sampleNum, false, false,
-                // false);
+                // false,Settings.intervalNum);
                 // allRes.add(res);
                 // }
                 // for (Long[][] item : allRes) {
                 // Utils.writeFile("repartition ratio", Arrays.deepToString(item));
                 // }
                 // allRes = new ArrayList<>();
+
                 // // vary minLeaf
+
                 Utils.writeFile("", "Varying minLeaf");
                 for (int minLeafNB : new int[] { 20, 30, 40, 50, 60 }) {
                         System.out.println("Vary minLeaf");
                         res = evaluate(Settings.maxSpeed, Settings.cardinality, minLeafNB,
                                         Settings.interRatio, Settings.repartitionRatio, Settings.sampleNum, false,
-                                        false, true);
+                                        false, true, Settings.intervalNum);
                         allRes.add(res);
                 }
                 for (Long[][] item : allRes) {
@@ -191,15 +202,10 @@ public class Check {
                 allRes = new ArrayList<>();
 
                 long t2 = System.currentTimeMillis();
-                System.out.println("Time cost: " + (t2 - t1) / 1000);
+                System.out.println("All Evaluation Time Cost: " + (t2 - t1) / 1000);
         }
 
         public static void main(String[] args) {
-                // defaultTest();
                 varyTest();
-                // double[] precision = presision(Settings.maxSpeed, Settings.cardinality,
-                // Settings.minLeafNB,
-                // Settings.interRatio, Settings.sampleNum);
-                // System.out.println(Arrays.toString(precision));
         }
 }

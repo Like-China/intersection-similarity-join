@@ -5,65 +5,73 @@ import java.util.ArrayList;
 import utils.ContactPair;
 import utils.Data;
 import utils.Ellipse;
+import utils.TimePointMR;
 
 public class Refine {
 
     // further refine results
-    public static ArrayList<ContactPair> monitor(ArrayList<ContactPair> candidates, double interRatio,
-            boolean isPrecheck, int sampleNum) {
+    public static ArrayList<ContactPair> monitor(ArrayList<ContactPair> candidates, double similarityThreshold,
+            boolean isPrecheck, int sampleNum, int intervalNum) {
         ArrayList<ContactPair> refinedResult = new ArrayList<>();
         for (ContactPair pair : candidates) {
-            // check if pairs in candidate contact or not
-            if (isContact(pair.query, pair.db, interRatio, isPrecheck, sampleNum)) {
+            // check if the intersection similarity of pairs in candidate is at least the
+            // given similairty threshold
+            if (isContact(pair.query, pair.db, similarityThreshold, isPrecheck, sampleNum, intervalNum)) {
                 refinedResult.add(pair);
             }
         }
-        // System.out.println("candidate size / match size: " + candidates.size() + "/"
-        // + refinedResult.size());
+        System.out.println("candidate size / match size: " + candidates.size() + "/"
+                + refinedResult.size());
         return refinedResult;
     }
 
-    public static boolean isContact(Data qData, Data dbData, double interRatio, boolean isPrecheck, int sampleNum) {
+    public static boolean isContact(Data qData, Data dbData, double similarityThreshold, boolean isPrecheck,
+            int sampleNum, int intervalNum) {
         Ellipse qE = qData.bead;
         Ellipse dbE = dbData.bead;
-        double[][] points = null;
-        double areaSum = qE.getArea() + dbE.getArea();
-        // pre-checking 1: using rectangle (MBR)
-        if (isPrecheck) {
-            double interArea = qE.interAreaTo(dbE);
-            double upper = 2 * interArea / areaSum;
-            if (upper < interRatio) {
-                return false;
+
+        double interArea = qE.interAreaTo(dbE);
+        // the maximum intersection similarity among all time-points
+        double maxSim = 0;
+        for (int i = 0; i < intervalNum - 1; i++) {
+            // get time-point ranges of the two objects at several time points
+            double Ax = qE.curLocation.x;
+            double Ay = qE.curLocation.y;
+            double Bx = qE.nextLocation.x;
+            double By = qE.nextLocation.y;
+            double r1 = qE.maxSpeed * (qE.nextLocation.timestamp - qE.curLocation.timestamp) * i / intervalNum;
+            double r2 = qE.maxSpeed * (qE.nextLocation.timestamp - qE.curLocation.timestamp) * (intervalNum - i)
+                    / intervalNum;
+            TimePointMR qMR = new TimePointMR(Ax, Ay, Bx, By, r1, r2);
+
+            Ax = dbE.curLocation.x;
+            Ay = dbE.curLocation.y;
+            Bx = dbE.nextLocation.x;
+            By = dbE.nextLocation.y;
+            r1 = dbE.maxSpeed * (dbE.nextLocation.timestamp - dbE.curLocation.timestamp) * i / intervalNum;
+            r2 = dbE.maxSpeed * (dbE.nextLocation.timestamp - dbE.curLocation.timestamp) * (intervalNum - i)
+                    / intervalNum;
+            TimePointMR dbEMR = new TimePointMR(Ax, Ay, Bx, By, r1, r2);
+
+            // pre-checking 1: using the intersection of MBR of the whole time-interval
+            // motion ranges
+            if (isPrecheck) {
+                double upper = 2 * interArea / (qMR.getArea() + dbEMR.getArea());
+                if (upper < similarityThreshold) {
+                    return false;
+                }
             }
-        }
-        points = qE.sampleByLayout(sampleNum);
-        // use two-phase sampling strategy
-        double count = 0;
-        for (double[] point : points) {
-            if (dbE.cover(point[0], point[1])) {
-                count++;
-            }
-        }
-        double ratio1 = qE.getArea() / areaSum * (count / sampleNum);
-        count = 0;
-        // pre-checking 2: using upper bound
-        if (isPrecheck) {
-            if (ratio1 >= interRatio)
+            // calculate the intersection simlarity using the uniform sampling methods
+            double sim = qMR.simTo(dbEMR, sampleNum);
+            maxSim = sim > maxSim ? sim : maxSim;
+            if (maxSim >= similarityThreshold) {
                 return true;
-            if (ratio1 + dbE.getArea() / areaSum < interRatio)
-                return false;
-        }
-        points = dbE.sampleByLayout(sampleNum);
-        for (double[] point : points) {
-            if (qE.cover(point[0], point[1])) {
-                count++;
             }
+
         }
-        double ratio2 = dbE.getArea() / areaSum * (count / sampleNum);
-        if (ratio1 + ratio2 >= interRatio) {
-            return true;
-        }
+
         return false;
+
     }
 
 }

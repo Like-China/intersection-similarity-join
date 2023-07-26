@@ -5,7 +5,6 @@ import utils.ContactPair;
 import utils.Data;
 
 public class BruteEvaluation {
-    // at each timestamp, we update mtree by adding circle data in database set
     public ArrayList<Data> queries = new ArrayList<>();
     public ArrayList<Data> db = new ArrayList<>();
     public long fTime = 0;

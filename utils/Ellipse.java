@@ -64,28 +64,6 @@ public class Ellipse {
                 + " meanSpeed: " + meanSpeed + " maxSpeed: " + maxSpeed;
     }
 
-    // sample ellipse samplePointsByLayout
-    public double[][] sampleByLayout(int n) {
-
-        if (samplePointsByLayout != null) {
-            return samplePointsByLayout;
-        }
-        samplePointsByLayout = new double[n][2];
-
-        for (int i = 0; i < n; i++) {
-            double theta = 2 * Math.PI / n * i;
-            double r = Math.sqrt(a * a * b * b
-                    / (b * Math.cos(theta) * b * Math.cos(theta) + a * Math.sin(theta) * a * Math.sin(theta)));
-
-            double x = center[0] + r * Math.cos(theta) * Math.cos(angle) - r * Math.sin(theta) * Math.sin(angle);
-            double y = center[1] + r * Math.cos(theta) * Math.sin(angle) + r * Math.sin(theta) * Math.cos(angle);
-
-            samplePointsByLayout[i][0] = x;
-            samplePointsByLayout[i][1] = y;
-        }
-
-        return samplePointsByLayout;
-    }
 
     // check if a point in/on this ellipse
     public boolean cover(double x, double y) {
@@ -104,7 +82,7 @@ public class Ellipse {
         return Math.PI * a * b;
     }
 
-    public double[] getMBR() {
+    public double[] getEllipseMBR() {
         double centerX = center[0];
         double centerY = center[1];
         double majorRadius = a;
@@ -145,10 +123,10 @@ public class Ellipse {
     // calculate intersection area to another ellipse's MBR
     public double interAreaTo(Ellipse that) {
         if (this.MBR == null) {
-            this.MBR = this.getMBR();
+            this.MBR = this.getEllipseMBR();
         }
         if (that.MBR == null) {
-            that.MBR = that.getMBR();
+            that.MBR = that.getEllipseMBR();
         }
         // Calculate the coordinates of the intersection rectangle
         double x1 = Math.max(this.MBR[0], that.MBR[0]);
