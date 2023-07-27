@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TimePointMR {
-    // The time-point motion range is the intersection of two circles
+    // The time-point motion range is the intersection region of two circles
     // here, we record the centers and radius of these two circles
     double Ax, Ay;
     double Bx, By;
@@ -40,35 +40,82 @@ public class TimePointMR {
     public double getArea() {
         if (distance >= r1 + r2)
             return 0;
-        double angle1 = 2 * Math.acos((r1 * r1 + distance * distance - r2 * r2) / (2 * r1 * distance));
-        double angle2 = 2 * Math.acos((r2 * r2 + distance * distance - r1 * r1) / (2 * r2 * distance));
+        // totally covered
+        // double intersectionArea;
+        // if (distance <= Math.abs(r1 - r2)) {
+        // intersectionArea = Math.min(Math.PI * r1 * r1, Math.PI * r2 * r2);
+        // } else {
+        // double angle1 = Math.acos((r1 * r1 + distance * distance - r2 * r2) / (2 * r1
+        // * distance));
+        // double angle2 = Math.acos((r2 * r2 + distance * distance - r1 * r1) / (2 * r2
+        // * distance));
+        // intersectionArea = angle1 * r1 * r1 + angle2 * r2 * r2 - r1 * distance *
+        // Math.sin(angle1);
+        // }
+        // return intersectionArea;
+        double angle1 = 2 * Math.acos((r1 * r1 + distance * distance - r2 * r2) / (2
+                * r1 * distance));
+        double angle2 = 2 * Math.acos((r2 * r2 + distance * distance - r1 * r1) / (2
+                * r2 * distance));
         double sectorArea1 = 0.5 * r1 * r1 * angle1;
         double sectorArea2 = 0.5 * r2 * r2 * angle2;
-        return sectorArea1 + sectorArea2 - 0.5 * r1 * r1 * Math.sin(angle1) - 0.5 * r2 * r2 * Math.sin(angle2);
+        return sectorArea1 + sectorArea2 - 0.5 * r1 * r1 * Math.sin(angle1) - 0.5 *
+                r2 * r2 * Math.sin(angle2);
     }
 
     // get a given number of point samples within this time-point motion ranges with
     // uniform sampling
     private List<Point> getUniformSamplingPoints(int numSamples) {
-        double overlapRadius = (r1 + r2 - distance) / 2.0;
-        double gridArea = overlapRadius * overlapRadius / numSamples;
-        double gridStep = Math.sqrt(gridArea);
-        // uniform sample
+        // double overlapRadius = (r1 + r2 - distance) / 2.0;
+        // double gridArea = overlapRadius * overlapRadius / numSamples;
+        // double gridStep = Math.sqrt(gridArea);
+        // // uniform sample
+        // List<Point> samples = new ArrayList<>();
+        // for (double x = Ax - overlapRadius; x <= Ax + overlapRadius; x += gridStep) {
+        // for (double y = Ay - overlapRadius; y <= Ay + overlapRadius; y += gridStep) {
+        // if (isInsideOverlapArea(x, y)) {
+        // samples.add(new Point(x, y));
+        // }
+        // if (samples.size() >= numSamples) {
+        // break;
+        // }
+        // }
+        // if (samples.size() >= numSamples) {
+        // break;
+        // }
+        // }
+        double theta = Math.atan2(By - Ay, Bx - Ax);
+        double phi = Math.acos((r1 * r1 + distance * distance - r2 * r2) / (2 * r1 * distance));
+        double intersectionAngle1 = theta + phi;
+        double intersectionAngle2 = theta - phi;
+        double angleStep = (intersectionAngle2 - intersectionAngle1) / numSamples;
         List<Point> samples = new ArrayList<>();
-        for (double x = Ax - overlapRadius; x <= Ax + overlapRadius; x += gridStep) {
-            for (double y = Ay - overlapRadius; y <= Ay + overlapRadius; y += gridStep) {
-                if (isInsideOverlapArea(x, y)) {
-                    samples.add(new Point(x, y));
-                }
-                if (samples.size() >= numSamples) {
-                    break;
-                }
-            }
-            if (samples.size() >= numSamples) {
-                break;
-            }
+        for (int i = 0; i < numSamples; i++) {
+            double angle = intersectionAngle1 + i * angleStep;
+            double radius = r1 + (r2 - r1) * i / numSamples;
+            double sampleX = Ax + radius * Math.cos(angle);
+            double sampleY = Ay + radius * Math.sin(angle);
+            samples.add(new Point(sampleX, sampleY));
         }
         return samples;
+    }
+
+    // calculate intersection area to another MR's MBR
+    public double interAreaTo(TimePointMR that) {
+        double[] thisMBR = this.getMBR();
+        double[] thatMBR = that.getMBR();
+        // Calculate the coordinates of the intersection rectangle
+        double x1 = Math.max(thisMBR[0], thatMBR[0]);
+        double y1 = Math.max(thisMBR[2], thatMBR[2]);
+        double x2 = Math.min(thisMBR[1], thatMBR[1]);
+        double y2 = Math.min(thisMBR[3], thatMBR[3]);
+        // Calculate the area of the intersection rectangle
+        double intersectionArea = (x2 - x1) * (y2 - y1);
+        // Check if there is no intersection
+        if (intersectionArea < 0) {
+            intersectionArea = 0;
+        }
+        return intersectionArea;
     }
 
     // check if the smaple point is in the time-point motion range
@@ -80,8 +127,12 @@ public class TimePointMR {
 
     // calculate the intersection similarity to another
     public double simTo(TimePointMR that, int numSamples) {
-        List<Point> pointOfThis = this.getUniformSamplingPoints(numSamples);
-        List<Point> pointOfThat = that.getUniformSamplingPoints(numSamples);
+        double thisArea = this.getArea();
+        double thatArea = that.getArea();
+        int sampleNumOfThis = (int) (thisArea * numSamples / (thisArea + thatArea));
+        int sampleNumOfThat = (int) (thatArea * numSamples / (thisArea + thatArea));
+        List<Point> pointOfThis = this.getUniformSamplingPoints(sampleNumOfThis);
+        List<Point> pointOfThat = that.getUniformSamplingPoints(sampleNumOfThat);
         double n1 = 0;
         double n2 = 0;
         for (Point p : pointOfThis) {
@@ -94,7 +145,7 @@ public class TimePointMR {
                 n2++;
             }
         }
-        return (n1 + n1) / (pointOfThis.size() + pointOfThat.size());
+        return (n1 + n2) / numSamples;
     }
 
     // test

@@ -20,8 +20,8 @@ public class Refine {
                 refinedResult.add(pair);
             }
         }
-        System.out.println("candidate size / match size: " + candidates.size() + "/"
-                + refinedResult.size());
+        // System.out.println("candidate size / match size: " + candidates.size() + "/"
+        // + refinedResult.size());
         return refinedResult;
     }
 
@@ -30,10 +30,9 @@ public class Refine {
         Ellipse qE = qData.bead;
         Ellipse dbE = dbData.bead;
 
-        double interArea = qE.interAreaTo(dbE);
         // the maximum intersection similarity among all time-points
         double maxSim = 0;
-        for (int i = 0; i < intervalNum - 1; i++) {
+        for (int i = 1; i < intervalNum - 1; i++) {
             // get time-point ranges of the two objects at several time points
             double Ax = qE.curLocation.x;
             double Ay = qE.curLocation.y;
@@ -43,7 +42,6 @@ public class Refine {
             double r2 = qE.maxSpeed * (qE.nextLocation.timestamp - qE.curLocation.timestamp) * (intervalNum - i)
                     / intervalNum;
             TimePointMR qMR = new TimePointMR(Ax, Ay, Bx, By, r1, r2);
-
             Ax = dbE.curLocation.x;
             Ay = dbE.curLocation.y;
             Bx = dbE.nextLocation.x;
@@ -53,12 +51,13 @@ public class Refine {
                     / intervalNum;
             TimePointMR dbEMR = new TimePointMR(Ax, Ay, Bx, By, r1, r2);
 
-            // pre-checking 1: using the intersection of MBR of the whole time-interval
+            // pre-checking
             // motion ranges
             if (isPrecheck) {
+                double interArea = qMR.interAreaTo(dbEMR);
                 double upper = 2 * interArea / (qMR.getArea() + dbEMR.getArea());
                 if (upper < similarityThreshold) {
-                    return false;
+                    continue;
                 }
             }
             // calculate the intersection simlarity using the uniform sampling methods

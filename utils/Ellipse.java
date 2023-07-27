@@ -16,10 +16,6 @@ public class Ellipse {
     public double maxSpeed;
     // angle
     public double angle;
-    // 采样椭圆上的点
-    double[][] samplePointsByLayout;
-    // 采样椭圆长半轴上的点
-    double[][] samplePointsByGrid;
     double[] MBR;
 
     public Ellipse(Location curLocation, Location nextLocation, double maxSpeed) {
@@ -64,19 +60,6 @@ public class Ellipse {
                 + " meanSpeed: " + meanSpeed + " maxSpeed: " + maxSpeed;
     }
 
-
-    // check if a point in/on this ellipse
-    public boolean cover(double x, double y) {
-        double part1 = Math.pow((x - center[0]) * Math.cos(angle) + (y - center[1]) * Math.sin(angle), 2)
-                / Math.pow(a, 2);
-        double part2 = Math.pow((center[0] - x) * Math.sin(angle) + (y - center[1]) * Math.cos(angle), 2)
-                / Math.pow(b, 2);
-        if (part1 + part2 <= 1 + 0.0000001)
-            return true;
-        return false;
-    }
-
-    
     // get the area of the ellipse
     public double getArea() {
         return Math.PI * a * b;

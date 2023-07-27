@@ -3,6 +3,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TimePointMR",
+            "request": "launch",
+            "mainClass": "utils.TimePointMR",
+            "projectName": "intersection-similarity-join_d0c0c5cb"
+        },
+        {
+            "type": "java",
+            "name": "Check",
+            "request": "launch",
+            "mainClass": "evaluation.Check",
+            "projectName": "intersection-similarity-join_d0c0c5cb"
+        },
+        {
+            "type": "java",
             "name": "Launch TimePointMR",
             "request": "launch",
             "mainClass": "utils.TimePointMR",
