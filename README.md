@@ -20,7 +20,7 @@ The default parameter settings are listed in Settings.java.
 All data source is loaded by Loader.java, the data source is detailed below.
 The evaluation of BF-Alg, MJ-Alg and BJ-Alg are implemented by BruteEvaluation.java, MTreeEvaluation.java, and BallTreeEvaluation.java, respectively. The BJ-Alg with repartition is conducted in TernaryBallTreeEvaluation.java.
 The refinement is implemented in Refine.java
-Test.java is the main entrance of this project for overall evaluation with varied parameters.
+Check.java is the main entrance of this project for overall evaluation with varied parameters.
 
 # Open Data
 The Geolife dataset is available at https://www.kaggle.com/datasets/arashnic/microsoft-geolife-gps-trajectory-dataset.
