@@ -16,10 +16,15 @@ The package 'mtree' implements the indexing construction of M*-tree.
 The package 'utils' implements the classes of Location, Ellipse, ContactPair, etc.
 
 # Evaluation implementation
+
+## Setting
 The default parameter settings are listed in Settings.java.
+## data loading
 All data source is loaded by Loader.java, the data source is detailed below.
+## test
 The evaluation of BF-Alg, MJ-Alg and BJ-Alg are implemented by BruteEvaluation.java, MTreeEvaluation.java, and BallTreeEvaluation.java, respectively. The BJ-Alg with repartition is conducted in TernaryBallTreeEvaluation.java.
 The refinement is implemented in Refine.java
+## main entrance
 Check.java is the main entrance of this project for overall evaluation with varied parameters.
 
 # Open Data
