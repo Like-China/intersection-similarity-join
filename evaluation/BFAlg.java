@@ -4,16 +4,22 @@ import java.util.ArrayList;
 import utils.ContactPair;
 import utils.Data;
 
-public class BruteEvaluation {
+public class BFAlg {
+    // query, database set at each timestamp, we update them at each timestampe
     public ArrayList<Data> queries = new ArrayList<>();
     public ArrayList<Data> db = new ArrayList<>();
     public long fTime = 0;
 
-    public BruteEvaluation(ArrayList<Data> queries, ArrayList<Data> db) {
+    public BFAlg(ArrayList<Data> queries, ArrayList<Data> db) {
         this.queries = queries;
         this.db = db;
     }
 
+    /**
+     * conduct brute-force method to obtain all candidate pairs
+     * 
+     * @return all candidate pairs
+     */
     public ArrayList<ContactPair> getCandidate() {
         long t1 = System.currentTimeMillis();
         ArrayList<ContactPair> candidates = new ArrayList<>();
@@ -33,9 +39,7 @@ public class BruteEvaluation {
             }
         }
         long t2 = System.currentTimeMillis();
-        fTime = t2-t1;
-        // System.out.printf("Construction time: %7d Filter time:%7d**Brute**\n",
-        //         0, (t2 - t1));
+        fTime = t2 - t1;
         return candidates;
     }
 

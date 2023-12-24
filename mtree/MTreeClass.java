@@ -3,7 +3,6 @@ package mtree;
 import java.util.Set;
 import utils.Data;
 import utils.Pair;
-import utils.Utils;
 
 public class MTreeClass extends MTree {
 

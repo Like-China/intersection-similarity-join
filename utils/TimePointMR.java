@@ -40,19 +40,6 @@ public class TimePointMR {
     public double getArea() {
         if (distance >= r1 + r2)
             return 0;
-        // totally covered
-        // double intersectionArea;
-        // if (distance <= Math.abs(r1 - r2)) {
-        // intersectionArea = Math.min(Math.PI * r1 * r1, Math.PI * r2 * r2);
-        // } else {
-        // double angle1 = Math.acos((r1 * r1 + distance * distance - r2 * r2) / (2 * r1
-        // * distance));
-        // double angle2 = Math.acos((r2 * r2 + distance * distance - r1 * r1) / (2 * r2
-        // * distance));
-        // intersectionArea = angle1 * r1 * r1 + angle2 * r2 * r2 - r1 * distance *
-        // Math.sin(angle1);
-        // }
-        // return intersectionArea;
         double angle1 = 2 * Math.acos((r1 * r1 + distance * distance - r2 * r2) / (2
                 * r1 * distance));
         double angle2 = 2 * Math.acos((r2 * r2 + distance * distance - r1 * r1) / (2
@@ -66,24 +53,6 @@ public class TimePointMR {
     // get a given number of point samples within this time-point motion ranges with
     // uniform sampling
     private List<Point> getUniformSamplingPoints(int numSamples) {
-        // double overlapRadius = (r1 + r2 - distance) / 2.0;
-        // double gridArea = overlapRadius * overlapRadius / numSamples;
-        // double gridStep = Math.sqrt(gridArea);
-        // // uniform sample
-        // List<Point> samples = new ArrayList<>();
-        // for (double x = Ax - overlapRadius; x <= Ax + overlapRadius; x += gridStep) {
-        // for (double y = Ay - overlapRadius; y <= Ay + overlapRadius; y += gridStep) {
-        // if (isInsideOverlapArea(x, y)) {
-        // samples.add(new Point(x, y));
-        // }
-        // if (samples.size() >= numSamples) {
-        // break;
-        // }
-        // }
-        // if (samples.size() >= numSamples) {
-        // break;
-        // }
-        // }
         double theta = Math.atan2(By - Ay, Bx - Ax);
         double phi = Math.acos((r1 * r1 + distance * distance - r2 * r2) / (2 * r1 * distance));
         double intersectionAngle1 = theta + phi;

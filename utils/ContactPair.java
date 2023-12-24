@@ -1,14 +1,11 @@
 package utils;
 
 public class ContactPair {
-    /** A nearest-neighbor. */
+    // contact (candidate) pair
     public Data query;
     public Data db;
 
-    /**
-     * The distance from the nearest-neighbor to the query Data object
-     * parameter.
-     */
+    // The distance from the nearest-neighbor to the query Data object
     public double distance;
 
     public ContactPair(Data query, Data db, Double dist) {
@@ -22,6 +19,5 @@ public class ContactPair {
         // TODO Auto-generated method stub
         return query.toString() + " " + db.toString();
     }
-
 
 }

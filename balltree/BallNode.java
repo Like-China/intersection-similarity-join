@@ -1,3 +1,7 @@
+/**
+ * 
+ */
+
 package balltree;
 
 import java.util.*;
@@ -11,6 +15,14 @@ public class BallNode {
     public BallNode leftNode = null;
     public BallNode rightNode = null;
 
+    /**
+     * 
+     * @param id
+     * @param idxStart
+     * @param idxEnd
+     * @param pivot
+     * @param
+     */
     public BallNode(int id, int idxStart, int idxEnd, double[] pivot, double radius) {
         this.id = id;
         this.idxStart = idxStart;
@@ -20,7 +32,7 @@ public class BallNode {
     }
 
     public HashMap<Integer, double[]> preOrder(BallNode root, HashMap<Integer, double[]> searchMap) {
-        if (root != null ) {
+        if (root != null) {
             searchMap.put(root.id, root.pivot);
             if (root.leftNode != null) {
                 preOrder(root.leftNode, searchMap);
@@ -57,22 +69,10 @@ public class BallNode {
             radiusSum += node.radius;
         }
         System.out.println(
-                allNodes.size() + " / " + root.isBalancedTree(root) + " / " +
+                allNodes.size() + " / " +
                         root.getDepth(root.leftNode) + "/"
                         + root.getDepth(root.rightNode) + " / " + radiusSum);
         return allNodes;
-    }
-
-    public boolean isBalancedTree(BallNode root) {
-        if (root == null)
-            return true;
-
-        if (Math.abs(getDepth(root.leftNode) - getDepth(root.rightNode)) <= 1) {
-            return isBalancedTree(root.rightNode) && isBalancedTree(root.rightNode);
-        } else {
-            return false;
-        }
-
     }
 
     public int getDepth(BallNode root) {

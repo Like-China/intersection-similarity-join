@@ -5,8 +5,37 @@ import java.util.Arrays;
 import utils.ContactPair;
 import utils.Utils;
 
-public class Check { 
+// evaulate the algorithm performance with varied parameters: the maximum speed, cardinality, similarity threshold, etc.
+public class Evaluate {
 
+        /**
+         * conduct an evaluation with given parameter
+         * 
+         * @param maxSpeed         the times of the maximum speed to the averaged speed
+         * @param cardinality      the size of query/database
+         * @param minLeafNB        the node size in the balltree
+         * @param interRatio       the intersection similairity threshold
+         * @param repartitionRatio the repartition threshold
+         * @param sampleNum        the number of sampling points during refining
+         *                         precedure
+         * @param useBF            evaulate the performance of BFAlg or not
+         * @param useMJ            evaulate the performance of MJAlg or not
+         * @param useBall          evaulate the performance of BJAlgNoRepartition or not
+         * @param intervalNum      the number of evaluated time intervals
+         * @return the detailed time cost of the four algorithms in the form of
+         *         Long[6][4]
+         *         long[0][]: { bruteCTime, mCTime, ballCTime, ternaryCTime }
+         *         long[1][]: { bruteFTime, mFTime, ballFTime, ternaryFTime }
+         *         long[2][]: { bruteCTime + bruteFTime, mFTime + mCTime, ballFTime +
+         *         ballCTime,
+         *         ternaryFTime + ternaryCTime }
+         *         long[3][]: { basicRTime, basicRTime, advanceRTime, advanceRTime }
+         *         long[4][]: {bruteCTime + bruteFTime + basicRTime, mCTime + mFTime +
+         *         basicRTime,
+         *         ballCTime + ballFTime + advanceRTime, ternaryCTime + ternaryFTime +
+         *         advanceRTime)}
+         *         long[5][]: {searchCountSumOfBall, searchCountSumOfTernary, 0, 0}
+         */
         public static Long[][] evaluate(double maxSpeed, int cardinality, int minLeafNB, double interRatio,
                         double repartitionRatio, int sampleNum, boolean useBF, boolean useMJ, boolean useBall,
                         int intervalNum) {
@@ -18,8 +47,9 @@ public class Check {
                 long bruteFTime = 0, ballFTime = 0, mFTime = 0, ternaryFTime = 0;
                 // advanceRTime the the refinement time with pre-checking
                 long basicRTime = 0, advanceRTime = 0;
-
+                // the number of independent experiments
                 int expNum = 20;
+                // the number of node accesses
                 int searchCountSumOfBall = 0;
                 int searchCountSumOfTernary = 0;
                 l.getAllData(Settings.objectNB, maxSpeed);
@@ -27,15 +57,15 @@ public class Check {
                         long loopStart = System.currentTimeMillis();
                         System.out.println("\t Round: " + (i + 1));
                         l.getBatch(cardinality);
-                        // For some experiments, we do not evaluate the performance of BF-Alg, thus a boolean useBF is used
+                        // For some experiments, we do not evaluate the performance of BF-Alg, thus a
+                        // boolean useBF is used
                         if (useBF) {
-                                BruteEvaluation brute = new BruteEvaluation(l.queries, l.db);
+                                BFAlg brute = new BFAlg(l.queries, l.db);
                                 brute.getCandidate();
                                 bruteFTime += brute.fTime;
                         }
-                        // similarly
                         if (useMJ) {
-                                MTreeEvaluation m = new MTreeEvaluation(l.queries, l.db);
+                                MJAlg m = new MJAlg(l.queries, l.db);
                                 m.getCandidate();
                                 mCTime += m.cTime;
                                 mFTime += m.fTime;
@@ -43,7 +73,7 @@ public class Check {
 
                         ArrayList<ContactPair> ballCandidate = new ArrayList<>();
                         if (useBall) {
-                                BallTreeEvaluation ball = new BallTreeEvaluation(l.queries, l.db, minLeafNB);
+                                BJAlgNoRepartition ball = new BJAlgNoRepartition(l.queries, l.db, minLeafNB);
                                 ballCandidate = ball.getCandidate();
                                 searchCountSumOfBall += ball.searchCount;
                                 ballCTime += ball.cTime;
@@ -53,7 +83,7 @@ public class Check {
                                 System.gc();
                         }
 
-                        HBallTreeEvaluation ternaryBall = new HBallTreeEvaluation(l.queries, l.db,
+                        BJAlg ternaryBall = new BJAlg(l.queries, l.db,
                                         repartitionRatio, minLeafNB);
                         ballCandidate = ternaryBall.getCandidate();
                         searchCountSumOfTernary += ternaryBall.searchCount;
@@ -130,15 +160,15 @@ public class Check {
 
                 Utils.writeFile("", "Varying speed");
                 for (double maxSpeed : Settings.maxSpeeds) {
-                System.out.println("Vary speed");
-                res = evaluate(maxSpeed, Settings.cardinality, Settings.minLeafNB,
-                Settings.interRatio,
-                Settings.repartitionRatio, Settings.sampleNum, false, true, true,
-                Settings.intervalNum);
-                allRes.add(res);
+                        System.out.println("Vary speed");
+                        res = evaluate(maxSpeed, Settings.cardinality, Settings.minLeafNB,
+                                        Settings.interRatio,
+                                        Settings.repartitionRatio, Settings.sampleNum, false, true, true,
+                                        Settings.intervalNum);
+                        allRes.add(res);
                 }
                 for (Long[][] item : allRes) {
-                Utils.writeFile("speed", Arrays.deepToString(item));
+                        Utils.writeFile("speed", Arrays.deepToString(item));
                 }
                 allRes = new ArrayList<>();
 
@@ -146,15 +176,16 @@ public class Check {
 
                 Utils.writeFile("", "Varying cardinality");
                 // for (int cardinality: Settings.cardinalities) {
-                for (int cardinality: new int[]{23000,25000,30000,35000,41000}) {
+                for (int cardinality : new int[] { 23000, 25000, 30000, 35000, 41000 }) {
                         System.out.println("Vary cardinality");
                         res = evaluate(Settings.maxSpeed, cardinality, Settings.minLeafNB,
-                        Settings.interRatio,                Settings.repartitionRatio, Settings.sampleNum, true, true, true,
-                        Settings.intervalNum);
+                                        Settings.interRatio, Settings.repartitionRatio, Settings.sampleNum, true, true,
+                                        true,
+                                        Settings.intervalNum);
                         allRes.add(res);
                 }
                 for (Long[][] item : allRes) {
-                Utils.writeFile("cardinality", Arrays.deepToString(item));
+                        Utils.writeFile("cardinality", Arrays.deepToString(item));
                 }
                 allRes = new ArrayList<>();
 
@@ -174,18 +205,18 @@ public class Check {
                 }
                 allRes = new ArrayList<>();
 
-                // // vary repartition ratio
+                // vary repartition ratio (intersection similairity)
 
                 Utils.writeFile("", "Varying repartition ratio");
                 for (double repartitionRatio : Settings.repartitionRatios) {
-                System.out.println("Vary repartition ratio");
-                res = evaluate(Settings.maxSpeed, Settings.cardinality, Settings.minLeafNB,
-                Settings.interRatio, repartitionRatio, Settings.sampleNum, false, false,
-                false,Settings.intervalNum);
-                allRes.add(res);
+                        System.out.println("Vary repartition ratio");
+                        res = evaluate(Settings.maxSpeed, Settings.cardinality, Settings.minLeafNB,
+                                        Settings.interRatio, repartitionRatio, Settings.sampleNum, false, false,
+                                        false, Settings.intervalNum);
+                        allRes.add(res);
                 }
                 for (Long[][] item : allRes) {
-                Utils.writeFile("repartition ratio", Arrays.deepToString(item));
+                        Utils.writeFile("repartition ratio", Arrays.deepToString(item));
                 }
                 allRes = new ArrayList<>();
 
@@ -193,14 +224,14 @@ public class Check {
 
                 Utils.writeFile("", "Varying minLeaf");
                 for (int minLeafNB : new int[] { 20, 30, 40, 50, 60 }) {
-                System.out.println("Vary minLeaf");
-                res = evaluate(Settings.maxSpeed, Settings.cardinality, minLeafNB,
-                Settings.interRatio, Settings.repartitionRatio, Settings.sampleNum, false,
-                false, true, Settings.intervalNum);
-                allRes.add(res);
+                        System.out.println("Vary minLeaf");
+                        res = evaluate(Settings.maxSpeed, Settings.cardinality, minLeafNB,
+                                        Settings.interRatio, Settings.repartitionRatio, Settings.sampleNum, false,
+                                        false, true, Settings.intervalNum);
+                        allRes.add(res);
                 }
                 for (Long[][] item : allRes) {
-                Utils.writeFile("minLeaf", Arrays.deepToString(item));
+                        Utils.writeFile("minLeaf", Arrays.deepToString(item));
                 }
                 allRes = new ArrayList<>();
 

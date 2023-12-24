@@ -12,13 +12,19 @@ import java.io.File;
 import java.io.FileReader;
 
 public class Loader {
-    // store all (location, nextlocation) in a ArryLiat<Data> (real values)
+    // store all data (location, nextlocation) in a ArryLiat<Data> (real values)
     ArrayList<Data> allData = new ArrayList<>();
     // query, database set at each timestamp, we update them at each timestampe
     public ArrayList<Data> queries = new ArrayList<>();
     public ArrayList<Data> db = new ArrayList<>();
 
-    // get all files in Geolife dierctory
+    /**
+     * get all trajectory files in the given dierctory
+     * 
+     * @param fileInput   the directory that stores trajectory files
+     * @param allFileList store all trajectory files of the input fileInput in a
+     *                    list
+     */
     public void getAllFile(File fileInput, List<File> allFileList) {
         File[] fileList = fileInput.listFiles();
         assert fileList != null;
@@ -33,7 +39,12 @@ public class Loader {
         }
     }
 
-    // store all data in the form of Ellipse (Data)
+    /**
+     * store all data in the form of Ellipse (Data) in ArrayList<Data> allData
+     * 
+     * @param readObjNum the maximum number of loaded trajectories/moving objects
+     * @param maxSpeed   the maximum speed of a moving object to its averaged speed
+     */
     public void getAllData(int readObjNum, double maxSpeed) {
         if (Settings.data == "Porto") {
             getPortoData(readObjNum, maxSpeed);
@@ -99,6 +110,13 @@ public class Loader {
         System.out.printf("objects: %d, locations: %d, ellipses: %d\n", id, locations.size(), allData.size());
     }
 
+    /**
+     * store all data in the form of Ellipse (Data) in ArrayList<Data> allData for
+     * Porto dataset
+     * 
+     * @param readObjNum
+     * @param maxSpeed
+     */
     public void getPortoData(int readObjNum, double maxSpeed) {
         allData = new ArrayList<>();
         // obtain all locations
@@ -151,13 +169,21 @@ public class Loader {
         System.out.printf("objects: %d, locations: %d, ellipses: %d\n", id, locations.size(), allData.size());
     }
 
-    // first run getAllData, then you can run getBatch to get a batch of data
-    // if not shuffle, sequencely read, else shuffle data
+    //
+    //
+
+    /**
+     * first run getAllData() to fill ArrayList<Data> allData, then run getBatch()
+     * to get a batch of data
+     * 
+     * @param cardinality the query size, the remaining is stored in the database
+     */
     public void getBatch(int cardinality) {
         queries = new ArrayList<>();
         db = new ArrayList<>();
         int size = allData.size();
         assert size >= 2 * cardinality : "Lack of data!";
+        // if not shuffle, sequencely read, else shuffle data
         if (Settings.isShuffle)
             Collections.shuffle(allData);
         for (int i = 0; i < 2 * cardinality; i++) {
